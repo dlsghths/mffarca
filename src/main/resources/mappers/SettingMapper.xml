@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mapper.SettingMapper">
+	
+	<resultMap id="SettingResultMap" type="com.example.model.Setting">
+	    <result property="type" column="type"/>
+	    <result property="day" column="day"/>
+	    <result property="slot" column="slot"/>
+	    <result property="attribute" column="attribute"/>
+	    <result property="heroIdx" column="hero_idx"/>
+	    <result property="name" column="name_eng"/>
+	    <result property="ctpId" column="ctp_id"/>
+	    <result property="ctpName" column="ctpName"/>
+	    <result property="color" column="color"/>
+	    <result property="note" column="note"/>
+	</resultMap>
+	
+    <select id="selectAllSettings" resultMap="SettingResultMap">
+        SELECT
+        	S.type,
+        	S.day,
+        	S.slot,
+        	S.attribute,
+        	S.hero_idx,
+        	H.name_eng,
+        	H.ctp_id,
+        	C.name AS ctpName,
+        	C.color AS color,
+        	S.note
+        FROM
+        	SETTING S
+        LEFT OUTER JOIN HERO H ON S.hero_idx = H.id
+        LEFT OUTER JOIN CTP C ON H.ctp_id = C.id
+        ORDER BY type ASC, day ASC, slot ASC
+    </select>
+
+	<select id="getCombToday" resultType="int">
+        SELECT today_idx
+        FROM COMBTODAY
+        LIMIT 1
+    </select>
+</mapper>

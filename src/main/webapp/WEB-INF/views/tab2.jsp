@@ -5,4 +5,4 @@
 <% request.setAttribute("pageName", "tab2"); %>
 
 <h2>영웅세팅</h2>
-<p>애기님바보</p>
+<p>준비중</p>
