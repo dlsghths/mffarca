@@ -1,6 +1,7 @@
 package com.example.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,8 @@ public class SettingServiceImpl implements SettingService {
 		return settingMapper.getCombToday();
 	}
 
-	
+	@Override
+	public List<Map<String, Object>> getHeroGroupCount(Map<String, Object> param) {
+		return settingMapper.getHeroGroupCount(param);
+	}	
 }

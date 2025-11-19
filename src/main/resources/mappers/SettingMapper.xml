@@ -42,4 +42,38 @@
         FROM COMBTODAY
         LIMIT 1
     </select>
+    
+<select id="getHeroGroupCount" parameterType="map" resultType="map">
+    SELECT
+        COALESCE(g.group_idx, s.hero_idx) AS group_idx,
+        h2.name_eng AS group_name_eng,
+        h2.name_kor AS group_name_kor,
+        c2.name AS ctp_name,
+        c2.color AS color,
+        COUNT(*) AS use_cnt
+    FROM SETTING s
+    LEFT JOIN HERO_GROUP g
+        ON s.hero_idx = g.hero_idx
+    JOIN HERO h2
+        ON h2.id = COALESCE(g.group_idx, s.hero_idx)
+    LEFT JOIN CTP c2
+        ON h2.ctp_id = c2.id
+    <where>
+        AND (s.infinity IS NULL OR s.infinity != 1)  <!-- infinity가 1이면 제외 -->
+
+        <if test="ctpList != null">
+            AND c2.name IN
+            <foreach item="ctp" collection="ctpList" open="(" separator="," close=")">
+                #{ctp}
+            </foreach>
+        </if>
+    </where>
+    GROUP BY
+        COALESCE(g.group_idx, s.hero_idx),
+        h2.name_eng,
+        h2.name_kor,
+        c2.name,
+        c2.color
+    ORDER BY ${orderBy}
+</select>
 </mapper>
