@@ -67,7 +67,8 @@
             <tr>
                 <td>
                     <img src="${ctx}/resources/images/hero/${row.group_name_eng}.png"
-                         style="width:50px;height:50px;background-color:#${row.color};" />
+                         style="width:50px;height:50px;background-color:#${row.color}; cursor:pointer;"
+                          onclick="gotoHero(${row.group_idx})"/>
                 </td>
                 <td>${row.group_name_kor}</td>
                 <td>${row.ctp_name}</td>
@@ -118,6 +119,10 @@
     	        });
     	    });
     });
+    
+    function gotoHero(heroId) {
+        window.location.href = "${ctx}/tab1?focusHero=" + heroId;
+    }
 </script>
 
 <style>

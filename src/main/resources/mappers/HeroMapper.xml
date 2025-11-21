@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.example.mapper.HeroMapper">
+
+	<select id="searchHero" parameterType="string" resultType="map">
+	    SELECT 
+	        h.id,
+	        h.name_kor,
+	        h.name_eng,
+	        h.ctp_id,
+	        c.name AS ctp_name,
+	        c.color
+	    FROM HERO h
+	    LEFT JOIN CTP c ON h.ctp_id = c.id
+	    WHERE h.name_kor LIKE CONCAT('%', #{keyword}, '%')
+	       OR h.name_eng LIKE CONCAT('%', #{keyword}, '%')
+	</select>
+	
+	<select id="getAllCtp" resultType="map">
+	    SELECT id, name
+	    FROM CTP
+	    ORDER BY name
+	</select>
+
+	<!-- CTP 업데이트 -->
+	<update id="updateHeroCtp">
+	    UPDATE HERO
+	    SET ctp_id = #{ctpId}
+	    WHERE id = #{heroId}
+	</update>
+	
+	<select id="getGroupIdxByHeroId" parameterType="int" resultType="int">
+    SELECT COALESCE(g.group_idx, h.id) AS group_idx
+    FROM HERO h
+    LEFT JOIN HERO_GROUP g ON h.id = g.hero_idx
+    WHERE h.id = #{heroId}
+</select>
+</mapper>

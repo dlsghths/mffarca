@@ -34,4 +34,9 @@
         text-align: center;
         margin-bottom: 20px;
     }
+       /* 클릭된 영웅 강조 테두리 */
+    .focus-hero {
+        border: 3px solid yellow;
+        border-radius: 5px;
+    }
 </style>

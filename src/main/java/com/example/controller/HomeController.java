@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.mapper.AccessLogMapper;
+import com.example.mapper.HeroMapper;
 import com.example.model.Setting;
 import com.example.service.SettingService;
 
@@ -22,8 +26,19 @@ public class HomeController {
 	@Autowired
 	private SettingService settingService;
 	
+	@Autowired
+	private AccessLogMapper accessLogMapper;
+	
+	@Autowired
+    private HeroMapper heroMapper;
+	
     @GetMapping({"/", "/tab1"})
-    public String tab1(Model model) {
+    public String tab1(@RequestParam(required = false) Integer focusHero, Model model) {
+    	Integer focusGroup = null;
+        if (focusHero != null) {
+            focusGroup = heroMapper.getGroupIdxByHeroId(focusHero);
+        }
+    	
     	List<Setting> settings = settingService.getAllSettings();
     	
     	for (Setting s : settings) {
@@ -32,6 +47,13 @@ public class HomeController {
             } else {
                 s.setAttributeList(new ArrayList<String>());
             }
+            
+            if (s.getHeroIdx() != null) {
+                Integer groupIdx = heroMapper.getGroupIdxByHeroId(s.getHeroIdx());
+                s.setGroupIdx(groupIdx);
+            } else {
+            	s.setGroupIdx(s.getHeroIdx());
+            }
         }
     	
     	int combToday = settingService.getCombToday();
@@ -39,6 +61,20 @@ public class HomeController {
     	model.addAttribute("settings", settings);
     	model.addAttribute("combToday", combToday);
         model.addAttribute("pageName", "tab1");
+        model.addAttribute("focusGroup", focusGroup);
+        
+        LocalDate today = LocalDate.now();
+        String url = "/";
+        if ("tab1".equals(model.getAttribute("pageName"))) {
+            url = "/tab1";
+        }
+        Map<String, Object> log = accessLogMapper.getAccessLog(url, java.sql.Date.valueOf(today));
+        if (log == null) {
+            accessLogMapper.insertAccessLog(url, java.sql.Date.valueOf(today));
+        } else {
+            accessLogMapper.updateAccessLog(url, java.sql.Date.valueOf(today));
+        }
+        
         return "tab1";
     }
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.example.mapper.AccessLogMapper">
+	<select id="getAccessLog" parameterType="map" resultType="map">
+	    SELECT * FROM ACCESS_LOG WHERE url = #{url} AND access_date = #{accessDate}
+	</select>
+	
+	<insert id="insertAccessLog" parameterType="map">
+	    INSERT INTO ACCESS_LOG (url, access_date, count) VALUES (#{url}, #{accessDate}, 1)
+	</insert>
+	
+	<update id="updateAccessLog" parameterType="map">
+	    UPDATE ACCESS_LOG SET count = count + 1 WHERE url = #{url} AND access_date = #{accessDate}
+	</update>
+</mapper>

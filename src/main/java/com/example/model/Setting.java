@@ -15,6 +15,7 @@ public class Setting {
     private int ctpId;
     private String ctpName;
     private String color;
+    private Integer groupIdx;
     
     private List<String> attributeList;
 
@@ -106,5 +107,11 @@ public class Setting {
 		this.note = note;
 	}
 
-    
+	public Integer getGroupIdx() {
+		return groupIdx;
+	}
+
+	public void setGroupIdx(Integer groupIdx) {
+		this.groupIdx = groupIdx;
+	}
 }
