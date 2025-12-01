@@ -34,9 +34,79 @@
         text-align: center;
         margin-bottom: 20px;
     }
-       /* 클릭된 영웅 강조 테두리 */
-    .focus-hero {
-        border: 3px solid yellow;
-        border-radius: 5px;
+    
+     .hero-ctp-wrapper {
+        position: relative;
+        display: inline-block;
     }
+    
+     .ctp-img {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        pointer-events: none; /* 클릭/탭은 뒤 hero-img가 받게 */
+        background-color: #000000;
+        
+    }
+    
+    .focus-hero {
+    position: relative;
+    z-index: 2; /* 주변보다 위로 올라오게 */
+    transform: translateY(-4px) scale(1.08); /* 살짝 위로 + 확대 */
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.45); /* 진한 그림자 */
+    outline: 3px solid red; /* 노란 테두리 */
+    filter: none; /* 혹시 흐리게 만들었으면 원래대로 */
+     animation: focus-pulse 0.9s ease-in-out infinite;
+     }
+     
+    .combo-table tbody th,
+	.combo-table tbody td {
+	    height: 75px;           /* 필요에 따라 70, 80 등 조정 */
+	    padding: 0;             /* 여백 줄이기 */
+	    vertical-align: middle; /* 가운데 정렬 */
+	}
+	
+	.combo-table thead th {
+	    height: 28px;          /* 원하는 만큼 줄이기 */
+	    padding: 2px 4px;
+	    font-size: 12px;       /* 글씨도 조금 작게 */
+	    vertical-align: middle;
+	}
+	
+	.combo-table td:nth-child(6) {
+	    max-height: 60px;
+	    overflow-y: auto;
+	}
+	
+	.attr-img {
+	    width: 48px;
+	    height: 48px;
+	}
+	@media screen and (max-width: 768px) {
+	    .attr-img {
+	        width: 16px !important;
+	        height: 16px !important;
+	    }
+	}
+}
+
+@keyframes focus-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0.4);
+    }
+    50% {
+        transform: scale(1.12);        /* 중간에 제일 크게 */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0.4);
+    }
+}
 </style>

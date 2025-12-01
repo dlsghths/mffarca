@@ -14,6 +14,7 @@ public class Setting {
     private String name;
     private int ctpId;
     private String ctpName;
+    private String ctpNameEng;
     private String color;
     private Integer groupIdx;
     
@@ -73,6 +74,14 @@ public class Setting {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getCtpNameEng() {
+		return ctpNameEng;
+	}
+
+	public void setCtpNameEng(String ctpNameEng) {
+		this.ctpNameEng = ctpNameEng;
 	}
 
 	public int getCtpId() {
