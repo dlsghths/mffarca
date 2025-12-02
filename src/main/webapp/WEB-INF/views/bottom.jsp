@@ -60,7 +60,7 @@
                 </c:forEach>
                 <tr>
                     <td>${day}</td>
-                    <td>
+                    <td class="attr-cell">
                         <c:forEach var="attr" items="${condition}">
                             <img src="${ctx}/resources/images/attribute/${attr}.png" style="background-color:000000;" class="attr-img"
                                  onerror="this.src='${ctx}/resources/images/attribute/Free.png';" />
@@ -160,7 +160,7 @@
                 </c:forEach>
                 <tr>
                     <td>${day}</td>
-                    <td>
+                    <td class="attr-cell">
                         <c:forEach var="attr" items="${condition}">
                             <img src="${ctx}/resources/images/attribute/${attr}.png" style="background-color:000000;" class="attr-img"
                                  onerror="this.src='${ctx}/resources/images/attribute/Free.png';"/>
@@ -208,17 +208,15 @@
 
         var lastHero = null; // 마지막으로 클릭한 캐릭터 이름 (토글용)
 
-        // ABX / ABXL 둘 다 .combo-table 이니까, 각 테이블에 이벤트 등록
+        // ====== 캐릭터 클릭 강조 처리 ======
         var tables = document.querySelectorAll('.combo-table');
 
         tables.forEach(function (table) {
             table.addEventListener('click', function (event) {
 
-                // 클릭된 요소가 img.hero-img 인지 찾기 (버블링 이용)
                 var target = event.target;
                 var img = target.closest ? target.closest('img.hero-img') : null;
 
-                // closest 를 지원하지 않는 브라우저용 fallback
                 if (!img) {
                     var node = target;
                     while (node && node !== table) {
@@ -239,11 +237,10 @@
                     return;
                 }
 
-                // ⭐ 이제는 모든 래퍼(div.hero-ctp-wrapper)를 기준으로 처리
                 var allWrappers = document.querySelectorAll('.hero-ctp-wrapper');
                 var allHeroImgs = document.querySelectorAll('img.hero-img');
 
-                // 같은 캐릭터를 다시 클릭하면 전체 강조 해제
+                // 같은 캐릭을 다시 클릭하면 전체 강조 해제
                 if (lastHero === heroName) {
                     allWrappers.forEach(function (wrap) {
                         wrap.classList.remove('focus-hero');
@@ -257,7 +254,7 @@
 
                 lastHero = heroName;
 
-                // 기존 강조 전부 제거 (div + img 둘 다)
+                // 기존 강조 제거
                 allWrappers.forEach(function (wrap) {
                     wrap.classList.remove('focus-hero');
                 });
@@ -269,32 +266,62 @@
                 allWrappers.forEach(function (wrap) {
                     var heroImg = wrap.querySelector('img.hero-img');
                     if (heroImg && heroImg.getAttribute('data-hero') === heroName) {
-                        // 래퍼에 강조 클래스 부여
                         wrap.classList.add('focus-hero');
-                        // 혹시 img에도 같이 주고 싶으면 아래 한 줄도 활성화
-                        // heroImg.classList.add('focus-hero');
                     }
                 });
             });
         });
 
-    });
-    
-    document.addEventListener('DOMContentLoaded', function () {
-        // 왼쪽/오른쪽 테이블의 행 목록 가져오기
-        var leftRows  = document.querySelectorAll('.flex-item:nth-child(1) .combo-table tbody tr');
-        var rightRows = document.querySelectorAll('.flex-item:nth-child(2) .combo-table tbody tr');
+        // ====== 행 높이 + 조건 아이콘 크기 동기화 ======
+        function syncRowsAndAttrIcons() {
+            var leftRows  = document.querySelectorAll('.flex-item:nth-child(1) .combo-table tbody tr');
+            var rightRows = document.querySelectorAll('.flex-item:nth-child(2) .combo-table tbody tr');
 
-        var len = Math.min(leftRows.length, rightRows.length);
+            var len = Math.min(leftRows.length, rightRows.length);
 
-        for (var i = 0; i < len; i++) {
-            var lh = leftRows[i].offsetHeight;
-            var rh = rightRows[i].offsetHeight;
-            var h  = Math.max(lh, rh);
+            // 먼저 기존 height 초기화 (안 하면 이전 값 때문에 깨짐)
+            for (var i = 0; i < leftRows.length; i++) {
+                leftRows[i].style.height = '';
+            }
+            for (var j = 0; j < rightRows.length; j++) {
+                rightRows[j].style.height = '';
+            }
 
-            leftRows[i].style.height  = h + 'px';
-            rightRows[i].style.height = h + 'px';
+            // 다시 측정해서 큰 값으로 맞추기
+            for (var k = 0; k < len; k++) {
+                var lh = leftRows[k].offsetHeight;
+                var rh = rightRows[k].offsetHeight;
+                var h  = Math.max(lh, rh);
+
+                leftRows[k].style.height  = h + 'px';
+                rightRows[k].style.height = h + 'px';
+            }
+
+            // === 조건 아이콘 크기 자동 조절 (행 높이에 맞게) ===
+            var attrCells = document.querySelectorAll('.combo-table tbody td.attr-cell');
+            attrCells.forEach(function (cell) {
+                var cellHeight = cell.offsetHeight;
+                // 최소 16, 최대 36px 정도에서 자동 조절
+                var size = Math.max(16, Math.min(cellHeight - 8, 48));
+
+                var imgs = cell.querySelectorAll('.attr-img');
+                imgs.forEach(function (img) {
+                    img.style.width  = size + 'px';
+                    img.style.height = size + 'px';
+                });
+            });
         }
+
+        // 처음 로딩 시 1번 실행
+        syncRowsAndAttrIcons();
+
+        // 리사이즈 시에도 다시 맞추기 (디바운스)
+        var resizeTimer = null;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(syncRowsAndAttrIcons, 150);
+        });
     });
 </script>
+
 
