@@ -111,4 +111,16 @@ public class HomeController {
         model.addAttribute("ctpList", ctpList); // JSP 체크박스 상태 유지
         return "tab2";
     }
+    
+    @GetMapping("/tab3")
+    public String tab3(Model model) {
+    	String challengerImage = "challenger.jpg";   // /resources/images/arena/challenger.png
+	    String vibraniumImage  = "vibranium.jpg";    // /resources/images/arena/vibranium.png
+
+	    model.addAttribute("challengerImage", challengerImage);
+	    model.addAttribute("vibraniumImage", vibraniumImage);
+	    model.addAttribute("pageName", "tab3");
+    	
+    	return "arena";
+    }
 }
