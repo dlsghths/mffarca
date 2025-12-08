@@ -125,51 +125,46 @@
                                  onerror="this.src='${ctx}/resources/images/attribute/Free.png';" />
                         </c:forEach>
                     </td>
-
-                    <td>
-                        <div class="hero-ctp-wrapper<c:if test='${abxSlot1Group == focusGroup}'> focus-hero</c:if>">
-                            <img src="${ctx}/resources/images/hero/${abxSlot1}.png"
-                                 style="background-color:#${abxSlot1Color};"
-                                 data-hero="${abxSlot1}"
-                                 class="hero-img" />
-                            <c:if test="${not empty abxSlot1Ctp}">
-                                <img src="${ctx}/resources/images/ctp/${abxSlot1Ctp}.png"
-                                     class="ctp-img" />
-                            </c:if>
-                        </div>
-                    </td>
-
-                    <td>
-                        <div class="hero-ctp-wrapper<c:if test='${abxSlot2Group == focusGroup}'> focus-hero</c:if>">
-                            <img src="${ctx}/resources/images/hero/${abxSlot2}.png"
-                                 style="background-color:#${abxSlot2Color};"
-                                 data-hero="${abxSlot2}"
-                                 class="hero-img" />
-                            <c:if test="${not empty abxSlot2Ctp}">
-                                <img src="${ctx}/resources/images/ctp/${abxSlot2Ctp}.png"
-                                     class="ctp-img" />
-                            </c:if>
-                        </div>
-                    </td>
-
-                    <td>
-                        <div class="hero-ctp-wrapper<c:if test='${abxSlot3Group == focusGroup}'> focus-hero</c:if>">
-                            <img src="${ctx}/resources/images/hero/${abxSlot3}.png"
-                                 style="background-color:#${abxSlot3Color};"
-                                 data-hero="${abxSlot3}"
-                                 class="hero-img" />
-                            <c:if test="${not empty abxSlot3Ctp}">
-                                <img src="${ctx}/resources/images/ctp/${abxSlot3Ctp}.png"
-                                     class="ctp-img" />
-                            </c:if>
-                        </div>
-                    </td>
-
-                    <td>${abxNote}</td>
-
-                    <td colspan="5" style="text-align:center; font-size:12px;">
-                        ABXL 조합은 ABX와 동일
-                    </td>
+                    <td colspan="9" class="abx-cell">
+                    	<div>
+					        <div style="width: 50%;" class="hero-ctp-wrapper<c:if test='${abxSlot1Group == focusGroup}'> focus-hero</c:if>">
+					            <img src="${ctx}/resources/images/hero/${abxSlot1}.png"
+					                 style="background-color:#${abxSlot1Color};"
+					                 data-hero="${abxSlot1}"
+					                 class="hero-img" />
+					            <c:if test="${not empty abxSlot1Ctp}">
+					                <img src="${ctx}/resources/images/ctp/${abxSlot1Ctp}.png"
+					                     class="ctp-img" />
+					            </c:if>
+					        </div>
+					
+					        <div style="width: 50%;" class="hero-ctp-wrapper<c:if test='${abxSlot2Group == focusGroup}'> focus-hero</c:if>">
+					            <img src="${ctx}/resources/images/hero/${abxSlot2}.png"
+					                 style="background-color:#${abxSlot2Color};"
+					                 data-hero="${abxSlot2}"
+					                 class="hero-img" />
+					            <c:if test="${not empty abxSlot2Ctp}">
+					                <img src="${ctx}/resources/images/ctp/${abxSlot2Ctp}.png"
+					                     class="ctp-img" />
+					            </c:if>
+					        </div>
+					
+					        <div style="width: 50%;" class="hero-ctp-wrapper<c:if test='${abxSlot3Group == focusGroup}'> focus-hero</c:if>">
+					            <img src="${ctx}/resources/images/hero/${abxSlot3}.png"
+					                 style="background-color:#${abxSlot3Color};"
+					                 data-hero="${abxSlot3}"
+					                 class="hero-img" />
+					            <c:if test="${not empty abxSlot3Ctp}">
+					                <img src="${ctx}/resources/images/ctp/${abxSlot3Ctp}.png"
+					                     class="ctp-img" />
+					            </c:if>
+					        </div>
+					
+					        <div style="width: 100%;" class="hero-note">
+					            ${abxNote}
+					        </div>
+				    	</div>
+					</td>
                 </tr>
             </c:when>
 

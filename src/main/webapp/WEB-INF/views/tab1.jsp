@@ -111,5 +111,17 @@
 		    box-shadow: 0 0 0 rgba(0, 0, 0, 0.4);
 		}
 	}
-    
+
+	.abx-cell {
+	    padding: 0;
+		border: none;
+		margin: 0;
+	}
+	.abx-cell > div {
+		display: flex;
+		height: 100%;
+	}
+	.abx-cell > div > div:not(:last-child) {
+		border-right: 0.1px solid black;
+	}
 </style>
