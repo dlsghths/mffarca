@@ -33,6 +33,9 @@
         width: 100%;
         text-align: center;
         margin-bottom: 20px;
+        
+         border-collapse: collapse;
+    border-spacing: 0;
     }
     
     .combo-table tbody th,
@@ -95,6 +98,7 @@
     .hero-ctp-wrapper {
         position: relative;
         display: inline-block;
+        border: none;
     }
     
     @keyframes focus-pulse {
@@ -116,10 +120,18 @@
 	    padding: 0;
 		border: none;
 		margin: 0;
+		 border:1px solid #000;
 	}
 	.abx-cell > div {
 		display: flex;
 		height: 100%;
+	}
+	.abx-cell > div > div {
+		width: 50%;
+		height: 100%;
+		align-items:center;
+		display: flex;
+		justify-content: center;
 	}
 	.abx-cell > div > div:not(:last-child) {
 		border-right: 0.1px solid black;
