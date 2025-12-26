@@ -110,26 +110,24 @@
             </c:if>
         </c:forEach>
         <c:choose>
-            <c:when test="${day == 2 || day == 3
-            		|| day == 9 || day == 10
-            		|| day == 16 || day == 17
-            		|| day == 23 || day == 24
+            <c:when test="${day == 3 || day == 10 || day == 17 || day == 24
                            and abxSlot1 == abxlSlot1
                            and abxSlot2 == abxlSlot2
                            and abxSlot3 == abxlSlot3
                            and abxNote == abxlNote}">
-                <tr>
+                <tr style="border-top: 7px solid black; border-bottom: 7px solid black;">
                     <td>${day}</td>
-                    <td class="attr-cell">
-                        <c:forEach var="attr" items="${abxCondition}">
-                            <img src="${ctx}/resources/images/attribute/${attr}.png"
-                                 class="attr-img"
-                                 style="background-color:#000000;"
-                                 onerror="this.src='${ctx}/resources/images/attribute/Free.png';" />
-                        </c:forEach>
-                    </td>
-                    <td colspan="9" class="abx-cell">
+                    <td colspan="10" class="abx-cell">
                     	<div>
+                    		<div></div>
+                    		<div style="border-left: 0;">
+	                    		<c:forEach var="attr" items="${abxCondition}">
+		                            <img src="${ctx}/resources/images/attribute/${attr}.png"
+		                                 class="attr-img"
+		                                 style="background-color:#000000;"
+		                                 onerror="this.src='${ctx}/resources/images/attribute/Free.png';" />
+		                        </c:forEach>
+	                    	</div>
                     		<div>
                     			<div class="hero-ctp-wrapper<c:if test='${abxSlot1Group == focusGroup}'> focus-hero</c:if>">
 						            <img src="${ctx}/resources/images/hero/${abxSlot1}.png"
