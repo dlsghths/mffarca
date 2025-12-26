@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ include file="/WEB-INF/views/common/header_manage.jsp" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <html>
 <head>

@@ -41,4 +41,6 @@
 	</bean>
 	
 	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<context:property-placeholder location="/resources/globals.properties"/>
 </beans>
