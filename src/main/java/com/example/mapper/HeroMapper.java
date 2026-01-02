@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.example.model.HeroMasterDTO;
+
 public interface HeroMapper {
 
 	List<Map<String, Object>> searchHero(String keyword);
@@ -14,4 +16,6 @@ public interface HeroMapper {
     void updateHeroCtp(@Param("heroId") int heroId, @Param("ctpId") int ctpId);
     
     Integer getGroupIdxByHeroId(int heroId);
+    
+    List<HeroMasterDTO> selectHeroMasterList();
 }

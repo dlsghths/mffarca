@@ -33,9 +33,20 @@
 	</update>
 	
 	<select id="getGroupIdxByHeroId" parameterType="int" resultType="int">
-    SELECT COALESCE(g.group_idx, h.id) AS group_idx
-    FROM HERO h
-    LEFT JOIN HERO_GROUP g ON h.id = g.hero_idx
-    WHERE h.id = #{heroId}
-</select>
+	    SELECT COALESCE(g.group_idx, h.id) AS group_idx
+	    FROM HERO h
+	    LEFT JOIN HERO_GROUP g ON h.id = g.hero_idx
+	    WHERE h.id = #{heroId}
+	</select>
+	
+	<select id="selectHeroMasterList" resultType="com.example.model.HeroMasterDTO">
+	    SELECT
+	        h.id        AS id,
+	        h.name_kor  AS nameKor,
+	        h.name_eng  AS nameEng,
+	        c.name_eng  AS ctpNameEng
+	    FROM HERO h
+	    LEFT JOIN CTP c ON c.id = h.ctp_id
+	    ORDER BY h.name_kor
+	</select>
 </mapper>

@@ -8,7 +8,7 @@
 
 <%@ include file="topManage.jsp" %>
 
-<%@ include file="bottom.jsp" %>
+<%@ include file="bottomManage.jsp" %>
 
 <!-- 공통 CSS -->
 <style>
