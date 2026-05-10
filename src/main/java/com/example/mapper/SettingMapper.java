@@ -15,4 +15,6 @@ public interface SettingMapper {
 	int getCombToday();
 	
 	List<Map<String, Object>> getHeroGroupCount(Map<String, Object> map);
+	
+	void updateSettingHeroIdxByHeroCode(Map<String, Object> param);
 }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.mapper.AccessLogMapper;
 import com.example.mapper.HeroMapper;
@@ -127,8 +129,11 @@ public class HomeController {
     	String challengerImage = "challenger.jpg";   // /resources/images/arena/challenger.png
 	    String vibraniumImage  = "vibranium.jpg";    // /resources/images/arena/vibranium.png
 
+	    String arenaNote = arenaManageService.getNote();
+	    
 	    model.addAttribute("challengerImage", challengerImage);
 	    model.addAttribute("vibraniumImage", vibraniumImage);
+	    model.addAttribute("arenaNote", arenaNote);
 	    model.addAttribute("pageName", "tab3");
     	
     	return "arena";
@@ -198,8 +203,11 @@ public class HomeController {
     	String challengerImage = "challenger.jpg";   // /resources/images/arena/challenger.png
 	    String vibraniumImage  = "vibranium.jpg";    // /resources/images/arena/vibranium.png
 
+	    String arenaNote = arenaManageService.getNote();
+	    
 	    model.addAttribute("challengerImage", challengerImage);
 	    model.addAttribute("vibraniumImage", vibraniumImage);
+	    model.addAttribute("arenaNote", arenaNote);
 	    model.addAttribute("pageName", "tab3Manage");
     	
     	return "arenaManage";
@@ -222,16 +230,14 @@ public class HomeController {
         return "redirect:/tab3Manage";
     }
     
-    @PostMapping({"/tab1Manage/saveHeroIdx", "/manage/saveHeroIdx"})
-    @ResponseBody
-    public Map<String, Object> saveHeroIdx(@RequestBody SaveSettingRequest req) {
+    @PostMapping(
+    	    value = "/tab1Manage/saveHeroIdxPlain",
+    	    consumes = MediaType.TEXT_PLAIN_VALUE,
+    	    produces = MediaType.APPLICATION_JSON_VALUE
+    	)
+    	@ResponseBody
+    	public void saveHeroIdxPlain(@RequestBody String body) {
 
-        settingService.updateHeroIdx(req.getList());
-
-        Map<String, Object> res = new HashMap<>();
-        res.put("result", "OK");
-        res.put("count", req.getList() == null ? 0 : req.getList().size());
-        return res;
-    }
-
+    	    settingService.updateHeroIdx(body);
+    	}
 }
