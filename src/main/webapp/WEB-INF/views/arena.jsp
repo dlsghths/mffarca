@@ -119,13 +119,5 @@
 
 <div class="arena-note-container">
     <div class="arena-note-title">참고</div>
-    <div class="arena-note-box">
-        · 비브라늄<br>
-		&nbsp;&nbsp;&nbsp;&nbsp;블나/카니지<br>
-		&nbsp;&nbsp;&nbsp;&nbsp;부두/엠마/스파구유니챌린저<br><br>
-        · 챌린저<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;둠/샬<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;매직/콜로<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;화폭/맨티스<br>
-    </div>
+    <pre class="arena-note-box"><c:out value="${arenaNote}" /></pre>
 </div>

@@ -50,6 +50,7 @@
         <input type="text" name="keyword" id="keywordInput" placeholder="영웅 이름 검색" style="width:200px; height:25px;"
                value="${param.keyword != null ? param.keyword : ''}">
         <button type="submit">검색</button>
+        <button type="button" onclick="callDecrpt()">확인</button>
     </form>
 </div>
 
@@ -94,4 +95,17 @@
             input.select(); // 기존 내용 선택
         }
     };
+    
+    function callDecrpt() {
+        var keyword = document.getElementById("keywordInput").value;
+
+        fetch("${pageContext.request.contextPath}/decrpt?keyword=" + encodeURIComponent(keyword))
+            .then(response => response.text())
+            .then(data => {
+                console.log("응답값:", data);
+            })
+            .catch(error => {
+                console.error("에러:", error);
+            });
+    }
 </script>

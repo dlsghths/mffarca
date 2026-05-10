@@ -40,6 +40,9 @@
     	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 	
+	<bean id="multipartResolver"
+      class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
+	
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 	
 	<context:property-placeholder location="/resources/globals.properties"/>

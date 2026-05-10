@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <h2>오늘 조합 <span style="color: red">"${combToday}일차"</span></h2>
 
+<p></p>
 <!-- 초기값 설정 -->
 <c:set var="abxSlot1" value="" />
 <c:set var="abxSlot2" value="" />

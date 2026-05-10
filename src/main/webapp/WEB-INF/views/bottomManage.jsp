@@ -417,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var listEl = document.getElementById('heroSelectList');
   var searchEl = document.getElementById('heroSearchInput');
   var closeBtn = document.getElementById('heroModalClose');
+  var saveBtn = document.getElementById('heroSaveBtn');
 
   if (searchEl) searchEl.setAttribute('placeholder', '검색 (한글명)');
 
@@ -432,22 +433,137 @@ document.addEventListener('DOMContentLoaded', function () {
     return HERO_MASTER;
   }
 
+  // ====== (C) 변경사항(저장대상) - "한 번에 1개만" ======
+  var dirtyMap = new Map();
+
+  function addDirty(type, day, slot, heroCode) {
+    var key = type + '|' + day + '|' + slot;
+    var line = [type, day, slot, (heroCode || '')].join('|');
+    dirtyMap.set(key, line);
+  }
+
+  function removeDirty(type, day, slot) {
+    var key = type + '|' + day + '|' + slot;
+    dirtyMap.delete(key);
+  }
+
+  function clearDirtyFromImg(img) {
+    if (!img) return;
+    var day  = img.getAttribute('data-day');
+    var slot = img.getAttribute('data-slot');
+    var type = img.getAttribute('data-type'); // ABX / ABXL / BOTH
+    if (!day || !slot || !type) return;
+
+    if (type === 'BOTH') {
+      removeDirty('ABX',  day, slot);
+      removeDirty('ABXL', day, slot);
+    } else {
+      removeDirty(type, day, slot);
+    }
+  }
+
+  // ✅ 한 번에 1개만 변경 가능 => markDirty 할 때 항상 dirtyMap 초기화
+  function markDirtyFromImg(img, heroCode) {
+    if (!img) return;
+
+    dirtyMap.clear();
+
+    var day  = img.getAttribute('data-day');
+    var slot = img.getAttribute('data-slot');
+    var type = img.getAttribute('data-type'); // ABX / ABXL / BOTH
+    if (!day || !slot || !type) return;
+
+    if (type === 'BOTH') {
+      addDirty('ABX',  day, slot, heroCode);
+      addDirty('ABXL', day, slot, heroCode);
+    } else {
+      addDirty(type, day, slot, heroCode);
+    }
+  }
+
+  function buildPlainBodyFromDirty() {
+    return Array.from(dirtyMap.values()).join('\n');
+  }
+
+  // ====== (D) "이전 편집 칸" 원복을 위한 상태 ======
+  // activeEdit = { img, originalHero, originalCtp }
+  var activeEdit = null;
+
+  function applyHeroToImg(img, heroCode, ctpCode) {
+    if (!img) return;
+
+    // hero 이미지
+    if (heroCode) {
+      img.src = ctx + '/resources/images/hero/' + heroCode + '.png';
+    } else {
+      // heroCode가 빈 값이면 src를 지워서 엑스박스
+      img.removeAttribute('src');
+    }
+    img.setAttribute('data-hero', heroCode || '');
+    img.setAttribute('data-ctp', ctpCode || '');
+
+    // ctp 이미지
+    var wrapper = img.closest('.hero-ctp-wrapper');
+    if (!wrapper) return;
+
+    var ctpImg = wrapper.querySelector('.ctp-img');
+
+    if (ctpCode) {
+      if (!ctpImg) {
+        ctpImg = document.createElement('img');
+        ctpImg.className = 'ctp-img';
+        wrapper.appendChild(ctpImg);
+      }
+      ctpImg.src = ctx + '/resources/images/ctp/' + ctpCode + '.png';
+      ctpImg.style.display = '';
+    } else {
+      if (ctpImg) ctpImg.style.display = 'none';
+    }
+  }
+
+  function beginEdit(img) {
+    if (!img) return;
+    activeEdit = {
+      img: img,
+      originalHero: img.getAttribute('data-hero') || '',
+      originalCtp: img.getAttribute('data-ctp') || ''
+    };
+  }
+
+  // ✅ 다른 이미지 클릭 시: 이전 변경칸을 원래대로 되돌림 + dirty 제거
+  function revertActiveEditIfNeeded(newImg) {
+    if (!activeEdit || !activeEdit.img) return;
+    if (activeEdit.img === newImg) return;
+
+    applyHeroToImg(activeEdit.img, activeEdit.originalHero, activeEdit.originalCtp);
+    clearDirtyFromImg(activeEdit.img);
+
+    // 이전 active 결과 애니메이션도 풀어줌(선택 강조는 새 칸 기준으로 다시 잡힘)
+    modalSelectedHeroCode = newImg ? (newImg.getAttribute('data-hero') || null) : null;
+  }
+
+  // 저장 성공 후에는 "현재 상태"를 원본으로 갱신(다른 칸 클릭해도 저장된 건 안 돌아가게)
+  function commitActiveEditAsCurrent() {
+    if (!activeEdit || !activeEdit.img) return;
+    activeEdit.originalHero = activeEdit.img.getAttribute('data-hero') || '';
+    activeEdit.originalCtp  = activeEdit.img.getAttribute('data-ctp') || '';
+  }
+
+  // ====== (E) 모달 UI ======
   function openModal(img) {
     targetHeroImg = img;
 
-    // ✅ 모달이 이미 열려있으면 검색어 유지
     var alreadyOpen = (modal.style.display === 'block');
-
     modal.style.display = 'block';
 
-    if (!alreadyOpen) {
-      // 처음 열 때만 초기화하고 싶으면 여기서만 비우기
-      // 검색어 유지가 더 편하면 아래 줄 주석 처리하면 됨
-      // searchEl.value = '';
-    }
+    // 검색어 유지 (원하면 여기서 초기화 가능)
+    // if (!alreadyOpen) searchEl.value = '';
 
     renderList(getHeroList(), searchEl.value || '');
     searchEl.focus();
+
+    // 현재 선택된 hero를 결과에서 active 처리
+    setActiveResultItemByCode(modalSelectedHeroCode);
   }
 
   function closeModal() {
@@ -462,11 +578,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ✅ 검색은 "한글명(nameKo)"만
   function renderList(list, keyword) {
     listEl.innerHTML = '';
 
-    var kw = (keyword || '').trim().toLowerCase(); // 한글에는 영향 없음
+    var kw = (keyword || '').trim().toLowerCase();
 
     list
       .filter(function (h) {
@@ -481,14 +596,12 @@ document.addEventListener('DOMContentLoaded', function () {
         item.setAttribute('data-hero', h.code);
         item.setAttribute('data-ctp', (h.ctp || ''));
 
-        // ✅ 현재 모달에서 선택된 항목이면 active
         if (modalSelectedHeroCode && modalSelectedHeroCode === h.code) {
           item.classList.add('is-active');
         }
 
         var img = document.createElement('img');
-        img.src = ctx + '/resources/images/hero/' + h.code + '.png';
-        // 이미지 없으면 엑스박스 그대로
+        img.src = ctx + '/resources/images/hero/' + h.code + '.png'; // 없으면 엑스박스
 
         var name = document.createElement('div');
         name.className = 'hero-select-name';
@@ -512,6 +625,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // 검색 input
   searchEl.addEventListener('input', function () {
     renderList(getHeroList(), searchEl.value);
+    setActiveResultItemByCode(modalSelectedHeroCode);
   });
 
   // ✅ 검색 결과에서 캐릭터 선택 -> 테이블에 반영 BUT 모달은 닫지 않음
@@ -520,115 +634,78 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!item || !targetHeroImg) return;
 
     var newHero = item.getAttribute('data-hero');
-    var newCtp = item.getAttribute('data-ctp') || '';
+    var newCtp  = item.getAttribute('data-ctp') || '';
 
-    // 교체 대상 wrapper (이 wrapper만 focus 유지)
     var wrapper = targetHeroImg.closest('.hero-ctp-wrapper');
 
     // 1) hero 이미지 교체
-    targetHeroImg.src = ctx + '/resources/images/hero/' + newHero + '.png';
-    targetHeroImg.setAttribute('data-hero', newHero);
-    targetHeroImg.setAttribute('data-ctp', newCtp);
+    applyHeroToImg(targetHeroImg, newHero, newCtp);
 
-    // 2) ctp 이미지 교체
-    if (wrapper) {
-      var ctpImg = wrapper.querySelector('.ctp-img');
-      if (newCtp) {
-        if (!ctpImg) {
-          ctpImg = document.createElement('img');
-          ctpImg.className = 'ctp-img';
-          wrapper.appendChild(ctpImg);
-        }
-        ctpImg.src = ctx + '/resources/images/ctp/' + newCtp + '.png';
-        ctpImg.style.display = '';
-      } else {
-        if (ctpImg) ctpImg.style.display = 'none';
-      }
-    }
-
-    // 3) 테이블 focus는 클릭한 그 칸만
+    // 2) focus는 클릭한 그 칸만
     setFocus(wrapper);
 
-    // ✅ 4) 모달 검색 결과에서도 선택 항목을 active로(위아래 움직임)
+    // 3) 모달 결과에서 선택 항목 active + 바운스
     setActiveResultItemByCode(newHero);
 
-    // ✅ 5) 모달을 닫지 않는다 (검색창 유지)
-    // closeModal();  // <- 삭제
+    // ✅ 4) 저장대상은 "이 1개만"
+    markDirtyFromImg(targetHeroImg, newHero);
   });
 
-  // ====== (C) hero-img 클릭: (1) 그 칸만 focus 토글 + (2) 팝업 열기 ======
+  // ====== (F) 테이블 hero-img 클릭: 이전 변경칸 원복 + 새 칸 편집 시작 ======
   document.querySelectorAll('.combo-table').forEach(function (table) {
     table.addEventListener('click', function (event) {
       var img = event.target.closest ? event.target.closest('img.hero-img') : null;
       if (!img || !table.contains(img)) return;
 
+      // ✅ 다른 칸 클릭하면 이전 변경칸 원복
+      revertActiveEditIfNeeded(img);
+
+      // 새 칸 편집 시작(원본 저장)
+      beginEdit(img);
+
       var wrapper = img.closest('.hero-ctp-wrapper');
       toggleFocus(wrapper);
 
-      // 모달에서 "현재 선택된 hero"도 같이 표시해주기
+      // 모달에서 현재 hero active 표시
       modalSelectedHeroCode = img.getAttribute('data-hero') || null;
 
       openModal(img);
     });
   });
 
-  
-  var saveBtn = document.getElementById('heroSaveBtn');
-
-  function collectSettingList() {
-    var list = [];
-
-    // ✅ 테이블 안 hero-img만 수집 (모달 이미지는 제외)
-    document.querySelectorAll('.combo-table img.hero-img').forEach(function(img){
-      var day  = img.getAttribute('data-day');
-      var slot = img.getAttribute('data-slot');
-      var type = img.getAttribute('data-type'); // ABX / ABXL / BOTH
-      var heroCode = img.getAttribute('data-hero'); // ✅ name_eng (이미지 파일명)
-
-      if (!day || !slot || !type) return;
-
-      function pushOne(t){
-        list.push({
-          type: t,                 // ABX or ABXL
-          day: parseInt(day, 10),
-          slot: parseInt(slot, 10),
-          heroCode: heroCode || '' // name_eng (없으면 '' -> NULL 처리)
-        });
-      }
-
-      // ✅ BOTH는 ABX/ABXL 둘 다 저장
-      if (type === 'BOTH') {
-        pushOne('ABX');
-        pushOne('ABXL');
-      } else {
-        pushOne(type);
-      }
-    });
-
-    return list;
-  }
-
-  function postJson(url, bodyObj, ok, fail) {
+  // ====== (G) 저장 (text/plain) ======
+  function postPlain(url, text, ok, fail) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.setRequestHeader('Content-Type', 'text/plain; charset=UTF-8');
+    xhr.setRequestHeader('Accept', 'application/json');
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return;
       if (xhr.status >= 200 && xhr.status < 300) ok && ok(xhr.responseText);
       else fail && fail(xhr);
     };
-    xhr.send(JSON.stringify(bodyObj));
+    xhr.send(text);
   }
 
   if (saveBtn) {
-    saveBtn.addEventListener('click', function () {
-      var payload = { list: collectSettingList() };
+    saveBtn.addEventListener('click', function(){
+      var body = buildPlainBodyFromDirty();
 
-      // ✅ 컨트롤러 매핑과 동일하게 맞춰줘
-      var url = ctx + '/tab1Manage/saveHeroIdx';
+      if (!body) {
+        alert('변경된 항목이 없습니다.');
+        return;
+      }
 
-      postJson(url, payload, function(){
+      var url = ctx + '/tab1Manage/saveHeroIdxPlain';
+
+      postPlain(url, body, function(resp){
         alert('저장 완료');
+
+        // ✅ 저장 성공하면 "현재 상태"를 원본으로 갱신(이제 다른 칸 클릭해도 안 돌아감)
+        commitActiveEditAsCurrent();
+
+        // ✅ 저장했으니 변경목록 초기화
+        dirtyMap.clear();
       }, function(xhr){
         alert('저장 실패 (' + xhr.status + ')');
         console.error(xhr.responseText);
@@ -638,6 +715,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+
 
 <style>
 .hero-select-item.is-active {

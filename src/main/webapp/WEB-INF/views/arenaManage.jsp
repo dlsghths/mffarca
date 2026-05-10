@@ -55,7 +55,7 @@
     <div class="arena-form-row" style="align-items:flex-start;">
       <label>참고 글</label>
       <textarea class="arena-note-input" name="arenaNote"
-                placeholder="줄바꿈 그대로 입력하면 화면에서 줄바꿈으로 표시돼요.">${arenaNote}</textarea>
+          placeholder="줄바꿈 그대로 입력하면 화면에서 줄바꿈으로 표시돼요."><c:out value="${arenaNote}"/></textarea>
     </div>
 
     <div class="arena-form-actions">
@@ -128,6 +128,11 @@
         color: #555;
     }
     
+    .arena-note-box{
+	  white-space: pre-wrap; /* 줄바꿈 유지 + 긴 줄 자동 줄바꿈 */
+	  margin: 0;             /* pre 기본 여백 제거(원하면) */
+	}
+    
     @media (max-width: 768px) {
         .arena-container {
             flex-direction: column;
@@ -174,8 +179,5 @@
 
 <div class="arena-note-container">
   <div class="arena-note-title">참고</div>
-  <div class="arena-note-box">
-    <!-- ✅ 줄바꿈을 <br>로 출력 -->
-    <c:out value="${fn:replace(fn:escapeXml(arenaNote), '&#10;', '<br/>')}" escapeXml="false"/>
-  </div>
+  <pre class="arena-note-box"><c:out value="${arenaNote}" /></pre>
 </div>
