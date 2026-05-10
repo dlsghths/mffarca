@@ -78,4 +78,26 @@
         c2.color
     ORDER BY ${orderBy}
 </select>
+
+<update id="updateSettingHeroIdxByHeroCode" parameterType="java.util.Map">
+        UPDATE SETTING s
+        SET s.hero_idx =
+            <choose>
+                <!-- heroCode 비었으면 null 저장 -->
+                <when test="heroCode == null or heroCode == ''">
+                    NULL
+                </when>
+                <otherwise>
+                    (
+                        SELECT h.id
+                        FROM HERO h
+                        WHERE h.name_eng = #{heroCode}
+                        LIMIT 1
+                    )
+                </otherwise>
+            </choose>
+        WHERE s.type = #{type}
+          AND s.day  = #{day}
+          AND s.slot = #{slot}
+    </update>
 </mapper>

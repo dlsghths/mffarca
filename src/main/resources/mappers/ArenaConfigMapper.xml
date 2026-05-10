@@ -7,18 +7,10 @@
  	<select id="selectArenaNote" resultType="string">
         SELECT NOTE
         FROM ARENA_CONFIG
-        WHERE ID = 1
     </select>
 
     <update id="upsertArenaNote" parameterType="string">
-        MERGE INTO ARENA_CONFIG t
-        USING (SELECT 1 AS ID, #{note} AS NOTE FROM dual) s
-        ON (t.ID = s.ID)
-        WHEN MATCHED THEN
-            UPDATE SET t.NOTE = s.NOTE, t.UPDATED_AT = SYSDATE
-        WHEN NOT MATCHED THEN
-            INSERT (ID, NOTE, UPDATED_AT)
-            VALUES (1, s.NOTE, SYSDATE)
+    	UPDATE ARENA_CONFIG SET NOTE = #{note}
     </update>
 
 </mapper>
